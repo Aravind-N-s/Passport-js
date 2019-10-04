@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const router = express.Router()
 const passport = require('passport')
+const jwt = require('jsonwebtoken')
 const _ = require('lodash')
 const { User } = require('../Models/userModel')
 
@@ -17,14 +19,22 @@ router.post('/register', (req,res) => {
 
 //localhost:3005/users/login
 router.post('/login',passport.authenticate('local',{session:false}),(req,res) =>{
-    res.json('what')
+    const user = req.user
+    const tokenData = {
+        _id:user._id,
+        username: user.username,
+        createdAt: Number(new Date())
+    }
+    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET)
+    res.json({token})
 })
 
 //localhost:3005/users/account
-router.get('/account',passport.authenticate("local"), (req,res)=>{
+router.get('/account',passport.authenticate('jwt',{session:false}), (req,res)=>{
     const {user} = req
-    // res.send(user)
-    res.send(_.pick(user, ['_id','username','Admin','password']))
+    // res.json(user)
+    // res.json(_.pick(user, ['_id','username','password']))
+    res.render('index',{title: 'Express'})
 })
 
 //localhost:3005/users/logout

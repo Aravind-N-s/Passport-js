@@ -7,7 +7,7 @@ const options ={
 }
 
 const LocalStrategy = require('passport-local').Strategy
-passport.use(new LocalStrategy(options,function(email, password, done) {
+passport.use(new LocalStrategy(options,(email, password, done) => {
     User.findOne({email})
     .then(user =>{
         if(!user){

@@ -13,6 +13,7 @@ const port = process.env.PORT
 app.use(cors())
 app.use(passport.initialize())
 require('./app/Middlewares/passport-local')
+require('./app/Middlewares/passport-jwt')
 app.use(express.json())
 app.use('/', usersRouter)
 
