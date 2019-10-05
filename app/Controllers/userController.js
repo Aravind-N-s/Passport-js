@@ -6,18 +6,18 @@ const jwt = require('jsonwebtoken')
 const _ = require('lodash')
 const { User } = require('../Models/userModel')
 
-// const {authenticateUser} = require('../Middlewares/passport-setup')
-
-//localhost:3005/users/register
-router.post('/register', (req,res) => {
-    const body = req.body
-    const user = new User(body)
-    user.save()
-        .then(user => {res.json(user)})
-        .catch(err =>{res.send(err)})
+router.post('/register', async (req,res) => {
+    try{
+        const body = req.body
+        const user = new User(body)
+        const user1 = await user.save()
+        res.json(user1)
+    }catch(err){
+        res.json(err)
+    }
+    
 })
 
-//localhost:3005/users/login
 router.post('/login',passport.authenticate('local',{session:false}),(req,res) =>{
     const user = req.user
     console.log(user)
@@ -36,7 +36,6 @@ router.post('/login',passport.authenticate('local',{session:false}),(req,res) =>
     
 })
 
-//localhost:3005/users/account
 router.get('/account',passport.authenticate('jwt',{session:false}), (req,res)=>{
     const {user} = req
     // res.json(user)
@@ -44,14 +43,21 @@ router.get('/account',passport.authenticate('jwt',{session:false}), (req,res)=>{
     res.render('index',{title: 'Express'})
 })
 
-//localhost:3005/users/logout
-router.delete('/logout', (req,res) =>{
+router.delete('/logout', async (req,res) =>{
     const { user, token } = req
     User.findByIdAndUpdate(user._id,{$pull: {tokens: { token: token }}})
         .then(function(){
             res.send({notice:'successfully logged out'})
         })
         .catch(function(err){res.send(err)})
+        // try{
+        //     const newUser = await User.findByIdAndUpdate(user._id,{$pull: {tokens: { token: token }}})
+        //     if(newUser){
+        //         res.status(200).json({notice:'successfully logged out'})
+        //     }
+        // }catch(err){
+        //     res.send(err)
+        // }
 })
 module.exports = {
     usersRouter: router
