@@ -20,13 +20,20 @@ router.post('/register', (req,res) => {
 //localhost:3005/users/login
 router.post('/login',passport.authenticate('local',{session:false}),(req,res) =>{
     const user = req.user
-    const tokenData = {
-        _id:user._id,
-        username: user.username,
-        createdAt: Number(new Date())
+    console.log(user)
+    if(user !== 'error'){
+        const tokenData = {
+            _id:user._id,
+            username: user.username,
+            createdAt: Number(new Date())
+        }
+        const token = jwt.sign(tokenData, process.env.TOKEN_SECRET)
+        res.json({token})
     }
-    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET)
-    res.json({token})
+    else{
+        res.json('Invalid Email and Password')
+    }  
+    
 })
 
 //localhost:3005/users/account

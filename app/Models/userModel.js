@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const passport = require('passport')
+const bcryptjs = require('bcryptjs')
 const Schema = mongoose.Schema
 
 const userSchema = new Schema ({
@@ -13,7 +14,6 @@ const userSchema = new Schema ({
     email:{
         type: String,
         required: true,
-        unique: true,
         validate:{
             validator: function(value){
                 return validator.isEmail(value)
@@ -37,8 +37,10 @@ userSchema.pre('save', function(next){
     if(user.isNew){
         bcryptjs.genSalt(10)
         .then(salt =>{
+            console.log(salt)
             bcryptjs.hash(user.password, salt)
             .then(encrpytedPassword =>{
+                console.log(encrpytedPassword)
                 user.password = encrpytedPassword
                 next()
             })

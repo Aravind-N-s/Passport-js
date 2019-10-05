@@ -11,13 +11,13 @@ passport.use(new LocalStrategy(options,(email, password, done) => {
     User.findOne({email})
     .then(user =>{
         if(!user){
-            return Promise.reject({errors:'Invalid E-mail/Password'})
+            return done(null,'error')
         }
         bcryptjs.compare(password, user.password)
         .then(result => {
             if (result) {return done(null, user)}
             done()
         })
-        .catch(err => {return Promise.reject(err)})
+        .catch(err => {return done(err)})
     })
 }))
